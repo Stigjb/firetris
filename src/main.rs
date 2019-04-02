@@ -12,7 +12,7 @@ use piston::window::WindowSettings;
 
 pub use firetris::Firetris;
 pub use firetris_controller::FiretrisController;
-pub use firetris_view::{FiretrisView, FiretrisViewSettings};
+pub use firetris_view::{View, Settings};
 
 mod firetris;
 mod firetris_controller;
@@ -30,8 +30,8 @@ fn main() {
 
     let firetris = Firetris::new();
     let mut firetris_controller = FiretrisController::new(firetris);
-    let firetris_view_settings = FiretrisViewSettings::new();
-    let firetris_view = FiretrisView::new(firetris_view_settings);
+    let firetris_view_settings = Settings::new();
+    let firetris_view = View::new(firetris_view_settings);
 
     while let Some(e) = events.next(&mut window) {
         firetris_controller.event(&e);

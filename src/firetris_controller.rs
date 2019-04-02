@@ -3,7 +3,7 @@
 use piston::input::GenericEvent;
 use rand;
 
-use firetris::{Firetris, FiretrisPiece, PieceType, HEIGHT, WIDTH};
+use firetris::{Firetris, Piece, PieceType, HEIGHT, WIDTH};
 
 /// Handles events for Sudoku game.
 pub struct FiretrisController {
@@ -14,17 +14,17 @@ pub struct FiretrisController {
 
 impl FiretrisController {
     /// Creates a new firetris controller.
-    pub fn new(firetris: Firetris) -> FiretrisController {
-        FiretrisController {
-            firetris: firetris,
+    pub fn new(firetris: Firetris) -> Self {
+        Self {
+            firetris,
             since_last_update: 0.0,
         }
     }
 
-    pub fn collision(&self, next: &FiretrisPiece) -> bool {
+    pub fn collision(&self, next: &Piece) -> bool {
         let cells = self.firetris.cells;
         let pos = next.position;
-        for block in next.blocks.iter() {
+        for block in &next.blocks {
             let row = block[1] + pos[1];
             let col = block[0] + pos[0];
             if col < 0 || col >= WIDTH as i8 {
@@ -47,7 +47,7 @@ impl FiretrisController {
         if let Some(Button::Keyboard(key)) = e.press_args() {
             if key == Key::Return {
                 let piece_type = rand::random::<PieceType>();
-                self.firetris.active_piece = Some(FiretrisPiece::from(piece_type));
+                self.firetris.active_piece = Some(Piece::from(&piece_type));
                 return;
             };
             if self.firetris.active_piece.is_none() {
@@ -69,23 +69,23 @@ impl FiretrisController {
                 }
                 _ => piece.clone(),
             });
-            possible_next.map(|p| {
+            if let Some(p) = possible_next {
                 if !self.collision(&p) {
                     self.firetris.active_piece = Some(p);
                 }
-            });
+            };
         }
 
         if let Some(args) = e.update_args() {
             self.since_last_update += args.dt;
             if self.since_last_update >= 0.5 {
                 self.since_last_update -= 0.5;
-                let maybe_next = self.firetris.active_piece.as_ref().map(FiretrisPiece::drop);
+                let maybe_next = self.firetris.active_piece.as_ref().map(Piece::drop);
                 match maybe_next.as_ref().map(|p| self.collision(&p)) {
                     Some(true) => {
                         self.firetris.settle();
                         let piece_type = rand::random::<PieceType>();
-                        self.firetris.active_piece = Some(FiretrisPiece::from(piece_type));
+                        self.firetris.active_piece = Some(Piece::from(&piece_type));
                     }
                     Some(false) => self.firetris.active_piece = maybe_next,
                     None => {}
