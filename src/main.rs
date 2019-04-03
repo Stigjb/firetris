@@ -12,7 +12,7 @@ use piston::window::WindowSettings;
 
 pub use firetris::Firetris;
 pub use firetris_controller::FiretrisController;
-pub use firetris_view::{View, Settings};
+pub use firetris_view::{Settings, View};
 
 mod firetris;
 mod firetris_controller;

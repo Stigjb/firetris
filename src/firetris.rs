@@ -157,15 +157,14 @@ impl Firetris {
             .cells
             .iter()
             .enumerate()
-            .filter(|(_i, r)| r.iter().all(|v| v.is_some()))
-            .map(|(i, _r)| i)
+            .filter_map(|(i, r)| if r.contains(&None) { None } else { Some(i) })
             .collect::<Vec<usize>>();
         let score = match rows.len() {
             1 => 50,
             2 => 120,
             3 => 180,
             4 => 250,
-            n => n,  // Should realistically only be zero
+            n => n, // Should realistically only be zero
         };
         self.score += score;
         for row in rows {
